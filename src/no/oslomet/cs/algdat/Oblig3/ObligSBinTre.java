@@ -176,7 +176,13 @@ public class ObligSBinTre<T> implements Beholder<T>
     {
       throw new UnsupportedOperationException("Ikke kodet ennå!");
     }
-
+ 
   } // BladnodeIterator
 
+
+
+  public static void main (String[] args) {
+    ObligSBinTre<String> tre = new ObligSBinTre<>(Comparator.naturalOrder());
+    System. out .println(tre.antall()); // Utskrift: 0
+  }
 } // ObligSBinTre
