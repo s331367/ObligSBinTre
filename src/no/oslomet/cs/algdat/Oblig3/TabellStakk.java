@@ -73,7 +73,7 @@ public class TabellStakk<T> implements Stakk<T>
     public String toString()   // bruker StringJoiner
     {
         StringJoiner s = new StringJoiner(", ", "[", "]");
-        for (int i = antall - 1; i >= 0; i--)
+        for (int i = 0; i < antall; i++)
             s.add(a[i] == null ? "null" : a[i].toString());
         return s.toString();
     }

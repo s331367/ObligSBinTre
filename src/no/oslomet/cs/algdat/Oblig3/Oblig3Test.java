@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Oblig3Test {
 
-    // OPPGAVE 1 ////////////////////////////////////////////////
+    // OPPGAVE 1 //// ////////////////////////////////////////////
     @org.junit.jupiter.api.Test
     void oppgave1() {
         int antallFeil = 0;
