@@ -74,6 +74,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     }
 
     antall++;                                // én verdi mer i treet
+    endringer++;
     return true;                             // vellykket innlegging
   }
   
@@ -149,6 +150,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     }
 
     antall--;   // det er nå én node mindre i treet
+    endringer++;
     return true;
   }
   
@@ -444,13 +446,32 @@ public class ObligSBinTre<T> implements Beholder<T>
     private Node<T> p = rot, q = null;
     private boolean removeOK = false;
     private int iteratorendringer = endringer;
-    
+    Stakk<Node<T>> stakk1 = new TabellStakk<>();
+    Stakk<Node<T>> stakk2 = new TabellStakk<>();
+    int teller = 0;
+
     private BladnodeIterator()  // konstruktør
     {
-      if (tom()) return;
-      if(p.venstre != null || p.høyre != null){
-        if(p.venstre != null) p = p.venstre;
-        else p = p.høyre;
+      if (p!=null){
+        finnAlleBladNodeVerdie(p);
+        venstreTilHøyre();
+        p=stakk2.kikk();
+      }
+    }
+    private void finnAlleBladNodeVerdie(Node<T> n){
+      if(n==null) return;
+
+      if(n.høyre == null && n.venstre == null){//sjekker om noden er den siste i et gren
+        stakk1.leggInn(n);//legger verdien i så fall i stakken
+        teller++;//teller elementer satt inn på stakken
+      }
+
+      finnAlleBladNodeVerdie(n.venstre); //sjekker venstre barnet
+      finnAlleBladNodeVerdie(n.høyre);//sjekker høyre barnet
+    }
+    private void venstreTilHøyre(){
+      for(int i = 0; i<teller; i++){
+        stakk2.leggInn(stakk1.taUt());
       }
     }
     
@@ -463,7 +484,15 @@ public class ObligSBinTre<T> implements Beholder<T>
     @Override
     public T next()
     {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
+      if(iteratorendringer != endringer) throw new ConcurrentModificationException(endringer +
+              " er ikke lik"+ iteratorendringer);
+      if(!hasNext()) throw new NoSuchElementException("Finnes ingen flere bladnoder");
+
+      T verdi = stakk2.taUt().verdi;
+
+      if(!stakk2.tom()) stakk2.kikk(); //p = øverste verdien
+      else p = p = null;//hvis stakken er tom
+      return verdi;
     }
     
     @Override
