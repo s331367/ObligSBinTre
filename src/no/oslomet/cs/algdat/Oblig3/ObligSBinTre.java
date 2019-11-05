@@ -1,3 +1,7 @@
+// Rizwan Mahmood s331409
+// Danuson Vasantharajan s331362
+// Dusanth Selvarajah s331367
+
 package no.oslomet.cs.algdat.Oblig3;
 
 ////////////////// ObligSBinTre /////////////////////////////////
@@ -412,27 +416,34 @@ public class ObligSBinTre<T> implements Beholder<T>
     blader(tekstUt, n.venstre); //sjekker venstre barnet
     blader(tekstUt, n.høyre);//sjekker høyre barnet
   }
-  
-  public String postString()
-  {
-    if(tom()) return "[]";
 
-    StringJoiner tekstUt = new StringJoiner(", ","[","]");
-    Stakk<Node> s1 = new TabellStakk<>();
-    Stakk<Node> s2 = new TabellStakk<>();
-    s1.leggInn(rot);
+  public String postString() {
+    StringBuilder sb = new StringBuilder();
+    sb.append("[");
 
-    while ((!s1.tom())){
-      rot = s1.taUt();
-      s2.leggInn(rot);
-      if(rot.venstre != null) s1.leggInn(rot.venstre);
-      if(rot.høyre != null) s1.leggInn(rot.høyre);
+    Node<T> n = rot;
+
+    if (!tom()) {
+      finnNode(n, sb);
     }
 
-    while(!s2.tom()){
-      tekstUt.add(s2.taUt().verdi.toString());
+    sb.append("]");
+
+    return sb.toString();
+
+  }
+
+  private void finnNode(Node<T> p, StringBuilder s) {
+    if (p.venstre != null) {
+      finnNode(p.venstre, s);
     }
-    return tekstUt.toString();
+    if (p.høyre != null) {
+      finnNode(p.høyre, s);
+    }
+    if (p.venstre == null && p.høyre == null) ;
+
+    s.append(p.verdi);
+    if (p != rot) s.append(", ");
   }
   
   @Override
@@ -451,13 +462,21 @@ public class ObligSBinTre<T> implements Beholder<T>
     int teller = 0;
 
     private BladnodeIterator()  // konstruktør
-    {
-      if (p!=null){
+    {/*
+        if(tom()) return;
+
+        while(true){
+            if(p.venstre!=null) p = p.venstre;
+            else if(p.høyre!=null) p = p.høyre;
+            else break;
+        }*/
+       if(p!=null){
         finnAlleBladNodeVerdie(p);
         venstreTilHøyre();
         p=stakk2.kikk();
       }
     }
+
     private void finnAlleBladNodeVerdie(Node<T> n){
       if(n==null) return;
 
@@ -474,7 +493,7 @@ public class ObligSBinTre<T> implements Beholder<T>
         stakk2.leggInn(stakk1.taUt());
       }
     }
-    
+
     @Override
     public boolean hasNext()
     {
@@ -486,19 +505,51 @@ public class ObligSBinTre<T> implements Beholder<T>
     {
       if(iteratorendringer != endringer) throw new ConcurrentModificationException(endringer +
               " er ikke lik"+ iteratorendringer);
-      if(!hasNext()) throw new NoSuchElementException("Finnes ingen flere bladnoder");
+      else if(!hasNext()) throw new NoSuchElementException("Finnes ingen flere bladnoder");
+
+      removeOK = true;
+      q=p;
+      /*
+      T tmp = p.verdi;
+      while(hasNext()){
+          p=nesteInorden(p);
+          if(p == null) return tmp;
+          if(p.venstre == null && p.høyre == null) return tmp;
+      }
+      return tmp;*/
 
       T verdi = stakk2.taUt().verdi;
 
-      if(!stakk2.tom()) stakk2.kikk(); //p = øverste verdien
-      else p = p = null;//hvis stakken er tom
+      if(!stakk2.tom()) p = stakk2.kikk(); //p = øverste verdien
+      else p = null;//hvis stakken er tom
+
       return verdi;
     }
     
     @Override
     public void remove()
     {
-      throw new UnsupportedOperationException("Ikke kodet ennå!");
+        if (!removeOK) throw new IllegalStateException("Ulovlig tilstand!");
+        else if(endringer != iteratorendringer) throw new ConcurrentModificationException("");
+        removeOK = false;           // remove() kan ikke kalles paa nytt
+        /*
+        if(q.forelder == null) rot =null;
+        else {
+            if(q.forelder.venstre == q) q.forelder.venstre = null;
+            else  q.forelder.høyre = null;
+        }*/
+        if(antall == 1){
+            q=p=null;
+        }else{
+            if(q.forelder.venstre == q) q.forelder.venstre = null;
+            else q.forelder.høyre = null;
+        }
+
+        antall--;
+        endringer++;
+        iteratorendringer++;
+
+
     }
  
   } // BladnodeIterator
@@ -506,9 +557,29 @@ public class ObligSBinTre<T> implements Beholder<T>
 
 
   public static void main (String[] args) {
-    ObligSBinTre<Character> tre = new ObligSBinTre<>(Comparator.naturalOrder());
-    char[] verdier = "IATBHJCRSOFELKGDMPQN".toCharArray();
-    for (char c : verdier) tre.leggInn(c);
+      ObligSBinTre<Character> tre = new ObligSBinTre<>(Comparator.naturalOrder());
+      char[] verdier = "IATBHJCRSOFELKGDMPQN".toCharArray();
+      for (char c : verdier) tre.leggInn(c);
+
+      while (!tre.tom())
+      {
+          System.out.println(tre);
+          tre.fjernHvis(x -> true);
+      }
+
+      /*
+        [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T]
+        [A, B, C, E, F, H, I, J, L, M, O, P, R, T]
+        [A, B, C, F, H, I, J, L, O, R, T]
+        [A, B, C, H, I, J, O, R, T]
+        [A, B, H, I, J, R, T]
+        [A, B, I, J, T]
+        [A, I, T]
+        [I]
+
+
+
+       */
 
 
 
