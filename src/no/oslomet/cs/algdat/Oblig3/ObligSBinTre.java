@@ -226,14 +226,12 @@ public class ObligSBinTre<T> implements Beholder<T>
       while (p.venstre != null) {
         p = p.venstre;
       }
-
       return p;
     }
 
     while (p.forelder != null && p == p.forelder.høyre) {
       p = p.forelder;
     }
-
     return p.forelder;
   }
   
@@ -418,18 +416,18 @@ public class ObligSBinTre<T> implements Beholder<T>
   }
 
   public String postString() {
-    StringBuilder sb = new StringBuilder();
-    sb.append("[");
+    StringBuilder stringBuilder = new StringBuilder();
+    stringBuilder.append("[");
 
     Node<T> n = rot;
 
     if (!tom()) {
-      finnNode(n, sb);
+      finnNode(n, stringBuilder);
     }
 
-    sb.append("]");
+    stringBuilder.append("]");
 
-    return sb.toString();
+    return stringBuilder.toString();
 
   }
 
@@ -462,14 +460,7 @@ public class ObligSBinTre<T> implements Beholder<T>
     int teller = 0;
 
     private BladnodeIterator()  // konstruktør
-    {/*
-        if(tom()) return;
-
-        while(true){
-            if(p.venstre!=null) p = p.venstre;
-            else if(p.høyre!=null) p = p.høyre;
-            else break;
-        }*/
+    {
        if(p!=null){
         finnAlleBladNodeVerdie(p);
         venstreTilHøyre();
@@ -477,7 +468,8 @@ public class ObligSBinTre<T> implements Beholder<T>
       }
     }
 
-    private void finnAlleBladNodeVerdie(Node<T> n){
+    private void finnAlleBladNodeVerdie(Node<T> n)
+    {
       if(n==null) return;
 
       if(n.høyre == null && n.venstre == null){//sjekker om noden er den siste i et gren
@@ -509,14 +501,6 @@ public class ObligSBinTre<T> implements Beholder<T>
 
       removeOK = true;
       q=p;
-      /*
-      T tmp = p.verdi;
-      while(hasNext()){
-          p=nesteInorden(p);
-          if(p == null) return tmp;
-          if(p.venstre == null && p.høyre == null) return tmp;
-      }
-      return tmp;*/
 
       T verdi = stakk2.taUt().verdi;
 
@@ -532,12 +516,7 @@ public class ObligSBinTre<T> implements Beholder<T>
         if (!removeOK) throw new IllegalStateException("Ulovlig tilstand!");
         else if(endringer != iteratorendringer) throw new ConcurrentModificationException("");
         removeOK = false;           // remove() kan ikke kalles paa nytt
-        /*
-        if(q.forelder == null) rot =null;
-        else {
-            if(q.forelder.venstre == q) q.forelder.venstre = null;
-            else  q.forelder.høyre = null;
-        }*/
+
         if(antall == 1){
             q=p=null;
         }else{
@@ -554,36 +533,4 @@ public class ObligSBinTre<T> implements Beholder<T>
  
   } // BladnodeIterator
 
-
-
-  public static void main (String[] args) {
-      ObligSBinTre<Character> tre = new ObligSBinTre<>(Comparator.naturalOrder());
-      char[] verdier = "IATBHJCRSOFELKGDMPQN".toCharArray();
-      for (char c : verdier) tre.leggInn(c);
-
-      while (!tre.tom())
-      {
-          System.out.println(tre);
-          tre.fjernHvis(x -> true);
-      }
-
-      /*
-        [A, B, C, D, E, F, G, H, I, J, K, L, M, N, O, P, Q, R, S, T]
-        [A, B, C, E, F, H, I, J, L, M, O, P, R, T]
-        [A, B, C, F, H, I, J, L, O, R, T]
-        [A, B, C, H, I, J, O, R, T]
-        [A, B, H, I, J, R, T]
-        [A, B, I, J, T]
-        [A, I, T]
-        [I]
-
-
-
-       */
-
-
-
-
-
-  }
 } // ObligSBinTre
